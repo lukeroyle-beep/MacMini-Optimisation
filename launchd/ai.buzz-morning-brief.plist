@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>ai.buzz-morning-brief</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/opt/homebrew/bin/node</string>
+    <string>/Users/lukesmacminim41/Documents/Apple MacMini Optimisation/src/cli.mjs</string>
+    <string>brief</string>
+  </array>
+  <key>WorkingDirectory</key>
+  <string>/Users/lukesmacminim41/Documents/Apple MacMini Optimisation</string>
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Hour</key>
+    <integer>7</integer>
+    <key>Minute</key>
+    <integer>15</integer>
+  </dict>
+  <key>StandardOutPath</key>
+  <string>/Users/lukesmacminim41/Documents/Apple MacMini Optimisation/data/logs/morning-brief.out.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/lukesmacminim41/Documents/Apple MacMini Optimisation/data/logs/morning-brief.err.log</string>
+  <key>ProcessType</key>
+  <string>Background</string>
+  <key>LowPriorityIO</key>
+  <true/>
+  <key>ThrottleInterval</key>
+  <integer>60</integer>
+  <key>Umask</key>
+  <integer>63</integer>
+</dict>
+</plist>

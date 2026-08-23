@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "mode": "dry-run",
+  "production_assignments_unchanged": true,
+  "models": [
+    { "id": "ollama/qwen3.5:2b-q4_K_M", "locality": "local", "classes": ["trivial", "classification"], "coding": false, "tools": false, "context_limit": 12000, "cost_tier": 0 },
+    { "id": "ollama/qwen3.5:4b", "locality": "local", "classes": ["routine", "compression"], "coding": false, "tools": false, "context_limit": 20000, "cost_tier": 0 },
+    { "id": "ollama/qwen3.5:9b", "locality": "local", "classes": ["coding", "bounded_reasoning"], "coding": true, "tools": true, "context_limit": 32768, "cost_tier": 0 },
+    { "id": "openai/gpt-5.6-sol", "locality": "cloud", "classes": ["difficult", "ambiguous", "critical", "strategic", "coding"], "coding": true, "tools": true, "context_limit": 262144, "cost_tier": 3 }
+  ],
+  "rules": [
+    { "task_class": "trivial", "prefer": ["ollama/qwen3.5:2b-q4_K_M"] },
+    { "task_class": "classification", "prefer": ["ollama/qwen3.5:2b-q4_K_M"] },
+    { "task_class": "routine", "prefer": ["ollama/qwen3.5:4b"] },
+    { "task_class": "compression", "prefer": ["ollama/qwen3.5:4b"] },
+    { "task_class": "coding", "prefer": ["ollama/qwen3.5:9b", "openai/gpt-5.6-sol"] },
+    { "task_class": "bounded_reasoning", "prefer": ["ollama/qwen3.5:9b"] },
+    { "task_class": "difficult", "prefer": ["openai/gpt-5.6-sol"] },
+    { "task_class": "ambiguous", "prefer": ["openai/gpt-5.6-sol"] },
+    { "task_class": "critical", "prefer": ["openai/gpt-5.6-sol"] },
+    { "task_class": "strategic", "prefer": ["openai/gpt-5.6-sol"] }
+  ]
+}

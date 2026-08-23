@@ -1,0 +1,98 @@
+{
+  "version": 1,
+  "phase": 1,
+  "phase_name": "Observe",
+  "data_dir": "./data",
+  "channel": {
+    "id": "63d8f899-ee39-4556-8435-c8146c3cdb22",
+    "name": "Macmini Optimisation",
+    "visibility": "private"
+  },
+  "team": {
+    "Codex": { "role": "Chief Orchestrator", "reports_to": "USER" },
+    "Rook": { "role": "Operations, Systems & Delivery Lieutenant", "reports_to": "Codex" },
+    "Nova": { "role": "Strategy, Intelligence & Quality Lieutenant", "reports_to": "Codex" },
+    "Fizz": { "role": "Routine Operations Assistant", "reports_to": "Rook" },
+    "Forge": { "role": "Coding, Build & Test Specialist", "reports_to": "Rook" },
+    "Bumble": { "role": "Research & Evidence Analyst", "reports_to": "Nova" },
+    "Honey": { "role": "Communications & Knowledge Steward", "reports_to": "Nova" },
+    "Sentinel": { "role": "Validation & Acceptance Specialist", "reports_to": "Nova", "cross_stack": true }
+  },
+  "event_bus": {
+    "schema_version": 1,
+    "max_payload_bytes": 262144,
+    "max_payload_depth": 32,
+    "max_hops": 8,
+    "max_correlation_dispatches": 32,
+    "routes": {
+      "service.failure": ["Fizz"],
+      "service.recovered": ["Fizz"],
+      "repeated.failure": ["Rook"],
+      "test.failure": ["Forge"],
+      "pull_request.ready": ["Sentinel"],
+      "research.discovery": ["Bumble"],
+      "strategic.change": ["Nova"],
+      "approval.required": ["Codex"],
+      "validation.required": ["Sentinel"],
+      "validation.failed": ["Sentinel"],
+      "system.warning": ["Fizz"],
+      "system.event": ["Fizz"],
+      "agent.event": ["Rook"],
+      "repository.event": ["Forge"],
+      "github.event": ["Forge"],
+      "scheduled.event": ["Fizz"],
+      "home_assistant.event": ["Fizz"],
+      "job.completed": ["Honey"],
+      "job.failed": ["Rook"],
+      "validation.event": ["Sentinel"],
+      "approval.request": ["Codex"]
+    }
+  },
+  "autonomy": {
+    "max_level": "A1",
+    "capabilities": {
+      "system.inspect": "A0",
+      "service.health.read": "A0",
+      "repository.inspect": "A0",
+      "home_assistant.inspect": "A0",
+      "proposal.create": "A1",
+      "candidate_change.prepare": "A1",
+      "service.restart.approved": "A2",
+      "job.retry.approved": "A2",
+      "production.deploy": "A3",
+      "protected_branch.merge": "A3",
+      "external.communication.material": "A3",
+      "security.control.weaken": "A4",
+      "credential.disclose": "A4",
+      "important_data.delete": "A4",
+      "financial.trade": "A4"
+    }
+  },
+  "health": {
+    "stale_after_ms": 900000,
+    "command_timeout_ms": 12000,
+    "base_health_file": "/Users/lukesmacminim41/.local/state/macmini-ai/health.json",
+    "base_health_stale_after_ms": 1800000,
+    "home_assistant_url": "http://homeassistant.local/api/",
+    "repositories": [
+      "/Users/lukesmacminim41/Documents/Buzz App",
+      "/Users/lukesmacminim41/Documents/royal-navy-fleet-status"
+    ],
+    "services": [
+      { "name": "Buzz Desktop", "kind": "process", "pattern": "buzz-desktop" }
+    ],
+    "network_endpoints": [
+      { "name": "OpenClaw local models", "url": "http://127.0.0.1:19432/health", "local": true, "idle_ok": true },
+      { "name": "Home Assistant Observer", "url": "http://homeassistant.local:4357/", "local": true }
+    ]
+  },
+  "briefing": {
+    "hour": 7,
+    "minute": 15,
+    "lookback_hours": 24
+  },
+  "model_classification": {
+    "local_patterns": ["qwen", "gemma", "llama-cpp", "ollama", "mlx", "local"],
+    "cloud_patterns": ["openai", "gpt-", "claude", "anthropic"]
+  }
+}

@@ -1,0 +1,13 @@
+data/audit/
+data/briefs/
+data/events/
+data/health/
+data/incidents/
+data/locks/
+data/logs/
+data/metrics/
+data/project-state/
+data/quarantine/
+data/runtime.json
+*.tmp
+.DS_Store
