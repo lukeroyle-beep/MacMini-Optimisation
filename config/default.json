@@ -89,7 +89,15 @@
   "briefing": {
     "hour": 7,
     "minute": 15,
-    "lookback_hours": 24
+    "lookback_hours": 24,
+    "auto_publish": true,
+    "publisher": {
+      "name": "Honey",
+      "pubkey": "5351e57a055fe9cb30b3a2377951b8f08f18cf68a28b38c0e45d9520fae5002a",
+      "relay_url": "https://alderstone.communities.buzz.xyz",
+      "keychain_service": "buzz-desktop",
+      "keychain_account": "secrets"
+    }
   },
   "model_classification": {
     "local_patterns": ["qwen", "gemma", "llama-cpp", "ollama", "mlx", "local"],

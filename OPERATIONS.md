@@ -4,7 +4,9 @@
 
 - `ai.macmini-health` runs every 15 minutes and remains the base health authority. Its deployed script and Git source have matching SHA-256 hashes.
 - The observer hook runs after the base snapshot is safely written. Failure is non-blocking and cannot invalidate the established health result.
-- `ai.buzz-morning-brief` prepares one brief at 07:15. It does not publish externally.
+- `ai.buzz-morning-brief` prepares one deterministic brief at 07:15 and publishes it once to the private `Macmini Optimisation` channel as Honey. The existing Keychain identity is read at runtime; no private key is stored in this repository.
+- `ai.buzz-desktop-keepalive` starts Buzz after login and reopens it after an unexpected exit.
+- `ai.home-assistant-after-login` starts the existing Home Assistant VM after login when it is not already running.
 
 ## Important paths
 
@@ -52,4 +54,10 @@ Do not enable A2 until a separately reviewed evidence window shows:
 - Sentinel validation of the proposed recovery runbook;
 - explicit approval of each narrow A2 capability.
 
-Reboot autostart, Time Machine configuration, watchdog changes, model assignment changes and HA VM autostart are separate decisions outside this Phase 1 commissioning.
+Time Machine reformatting, watchdog replacement deployment and model assignment changes remain separate decisions outside the original Phase 1 commissioning.
+
+## Scoped owner approvals after commissioning
+
+- Automatic private-channel morning-brief publication is a single scoped A2 exception authorised by Luke on 2026-08-23. It does not raise the general autonomy ceiling; all other A2 capabilities remain denied.
+- After-login recovery for Buzz and the existing Home Assistant VM is explicitly authorised. FileVault remains enabled, so a human login is still required after a cold reboot.
+- The Rook watchdog has been reviewed separately. Its observe-only replacement is prepared but is not deployed without a further change approval; see `WATCHDOG_GOVERNANCE.md`.

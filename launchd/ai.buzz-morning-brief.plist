@@ -4,12 +4,11 @@
 <dict>
   <key>Label</key>
   <string>ai.buzz-morning-brief</string>
-  <key>ProgramArguments</key>
-  <array>
-    <string>/opt/homebrew/bin/node</string>
-    <string>/Users/lukesmacminim41/Documents/Apple MacMini Optimisation/src/cli.mjs</string>
-    <string>brief</string>
-  </array>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/opt/homebrew/bin/node</string>
+		<string>/Users/lukesmacminim41/Documents/Apple MacMini Optimisation/src/publish-brief.mjs</string>
+	</array>
   <key>WorkingDirectory</key>
   <string>/Users/lukesmacminim41/Documents/Apple MacMini Optimisation</string>
   <key>StartCalendarInterval</key>

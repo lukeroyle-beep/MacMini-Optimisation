@@ -4,17 +4,17 @@
 
 `PASS WITH WARNINGS` for the Phase 1 foundations implemented in this project.
 
-The verdict does not approve Phase 2 or any A2 action.
+The verdict does not approve Phase 2 or any A2 action beyond the later owner-approved, fixed private-channel morning-brief publication.
 
 ## Evidence
 
-- 33 isolated tests pass with no production relay, Keychain, Ollama or cloud-model calls.
+- 33 isolated Phase 1 tests passed during independent Sentinel acceptance. The post-commissioning suite now passes 34/34, including publication metadata idempotency, hash binding and audit coverage.
 - Independent traversal, quarantine-redaction, reporting-window, DST, terminal-task and partial-cost probes pass.
 - Live audit verification passes with every required field present and the hash chain intact.
 - Live Phase 1 policy checks confirm A2 is denied and A4 is prohibited.
 - The established health monitor completed successfully and invoked the sidecar without model inference.
 - The 07:15 launchd schedule is loaded and idle between runs.
-- The generated brief is idempotency-keyed by channel and local date and remains unpublished.
+- The generated brief is idempotency-keyed by channel and local date. The commissioned publisher uses Honey's existing Keychain identity, posts once to the private channel, and records the relay event ID without persisting the private key.
 
 ## Covered failures
 
@@ -35,10 +35,9 @@ The verdict does not approve Phase 2 or any A2 action.
 
 ## Warnings
 
-- Automated channel publication is not commissioned because no supported non-interactive identity injection has been approved.
-- Buzz/Pollen/Bumble and Sentinel runtime metadata drift remains unresolved.
+- Bumble is now canonical in `Buzz Command Team`; Pollen remains installed as a legacy identity. Sentinel activity metadata drift remains unresolved.
 - The Buzz local-routing tree is not source controlled.
-- No Time Machine destination is configured.
-- Existing Rook watchdog mutations remain outside this observer and require a later autonomy review.
+- No Time Machine destination is configured. The selected external disk is ExFAT and contains a small Home Assistant backup, so erasure/reformatting requires explicit confirmation.
+- The Rook watchdog review is complete and an observe-only replacement is prepared, but deployment remains a separate approval.
 
 There are no uncovered blocking defects. These warnings do not authorize Phase 2 or A2.

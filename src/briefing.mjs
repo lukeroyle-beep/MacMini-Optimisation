@@ -71,12 +71,42 @@ export async function buildMorningBrief({ dataDir, audit, stateStore, config, da
   const projectStates = (await Promise.all(projects.map((project) => stateStore.get(project)))).filter(Boolean);
   const content = renderMorningBrief({ date, health, audits: rows, projectStates, modelClassification: config.model_classification, staleAfterMs: config.health.stale_after_ms, timeZone: "Europe/London", briefHour: config.briefing.hour, briefMinute: config.briefing.minute, lookbackHours: config.briefing.lookback_hours });
   const path = join(dataDir, "briefs", `${date}.md`);
-  const prior = await readJson(join(dataDir, "briefs", `${date}.json`), null);
+  const metadataPath = join(dataDir, "briefs", `${date}.json`);
+  const prior = await readJson(metadataPath, null);
   const contentHash = sha256(content);
-  if (prior?.content_hash !== contentHash) {
-    await atomicWrite(path, content);
-    await atomicWrite(join(dataDir, "briefs", `${date}.json`), `${JSON.stringify({ idempotency_key: `morning-brief:${config.channel.id}:${date}`, content_hash: contentHash, channel_id: config.channel.id, published: false }, null, 2)}\n`);
+  const metadata = {
+    idempotency_key: `morning-brief:${config.channel.id}:${date}`,
+    content_hash: contentHash,
+    channel_id: config.channel.id,
+    published: prior?.published === true,
+    ...(prior?.published_at ? { published_at: prior.published_at } : {}),
+    ...(prior?.published_event_id ? { published_event_id: prior.published_event_id } : {}),
+    ...(prior?.published_content_hash ? { published_content_hash: prior.published_content_hash } : {}),
+  };
+  if (metadata.published && metadata.published_content_hash !== contentHash) metadata.publication_stale = true;
+  if (prior?.content_hash !== contentHash) await atomicWrite(path, content);
+  if (JSON.stringify(prior) !== JSON.stringify(metadata)) await atomicWrite(metadataPath, `${JSON.stringify(metadata, null, 2)}\n`);
+  await audit.append({ agent: "Honey", routing_reason: "deterministic_no_model", input_source: "audit+health+project-state", action: "morning_brief.prepare", autonomy_level: "A1", result: { status: prior?.content_hash === contentHash ? "unchanged" : "prepared", path, content_hash: contentHash, published: metadata.published }, errors: [] });
+  return { path, content, content_hash: contentHash, idempotency_key: metadata.idempotency_key, published: metadata.published, publication_stale: metadata.publication_stale ?? false };
+}
+
+export async function recordMorningBriefPublication({ dataDir, audit, config, date, contentHash, status, eventId = null, errorCode = null, now = new Date().toISOString() }) {
+  const metadataPath = join(dataDir, "briefs", `${date}.json`);
+  const metadata = await readJson(metadataPath, null);
+  if (!metadata) throw new Error(`brief metadata not found for ${date}`);
+  if (metadata.channel_id !== config.channel.id) throw new Error("brief channel mismatch");
+  if (metadata.content_hash !== contentHash) throw new Error("brief content hash mismatch");
+  if (status === "success") {
+    if (!eventId) throw new Error("successful publication requires an event id");
+    if (metadata.published) {
+      if (metadata.published_event_id !== eventId) throw new Error("brief already published with a different event id");
+      return { status: "already_published", ...metadata };
+    }
+    const updated = { ...metadata, published: true, published_at: now, published_event_id: eventId, published_content_hash: contentHash, publication_stale: false };
+    await atomicWrite(metadataPath, `${JSON.stringify(updated, null, 2)}\n`);
+    await audit.append({ agent: "Honey", routing_reason: "owner_scoped_scheduled_publication", input_source: metadata.idempotency_key, action: "morning_brief.publish", autonomy_level: "A2", approval_id: "user:2026-08-23:auto-brief-private-channel", result: { status: "success", channel_id: config.channel.id, event_id: eventId, content_hash: contentHash }, errors: [] });
+    return { status: "published", ...updated };
   }
-  await audit.append({ agent: "Honey", routing_reason: "deterministic_no_model", input_source: "audit+health+project-state", action: "morning_brief.prepare", autonomy_level: "A1", result: { status: prior?.content_hash === contentHash ? "unchanged" : "prepared", path, content_hash: contentHash, published: false }, errors: [] });
-  return { path, content, content_hash: contentHash, idempotency_key: `morning-brief:${config.channel.id}:${date}`, published: false };
+  await audit.append({ agent: "Honey", routing_reason: "owner_scoped_scheduled_publication", input_source: metadata.idempotency_key, action: "morning_brief.publish", autonomy_level: "A2", approval_id: "user:2026-08-23:auto-brief-private-channel", result: { status: "failure", channel_id: config.channel.id, content_hash: contentHash }, errors: [errorCode ?? "publication_failed"] });
+  return { status: "failed", published: false, error_code: errorCode ?? "publication_failed" };
 }

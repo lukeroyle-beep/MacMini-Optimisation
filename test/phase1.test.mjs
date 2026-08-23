@@ -1,11 +1,11 @@
 import assert from "node:assert/strict";
-import { mkdtemp, readFile, readdir, rm, unlink, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, readdir, rm, unlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
 import { AUDIT_REQUIRED_FIELDS, AuditLog } from "../src/audit-log.mjs";
 import { AutonomyPolicy } from "../src/autonomy.mjs";
-import { renderMorningBrief, reportingWindow } from "../src/briefing.mjs";
+import { recordMorningBriefPublication, renderMorningBrief, reportingWindow } from "../src/briefing.mjs";
 import { DeliveryStore } from "../src/deliveries.mjs";
 import { EventBus } from "../src/event-bus.mjs";
 import { collectHealth, fetchProbe, runHeartbeat } from "../src/health.mjs";
@@ -286,6 +286,19 @@ test("Europe/London briefing windows remain contiguous across DST", () => {
   const autumn = reportingWindow({ date: "2026-10-25", hour: 7, minute: 15, lookbackHours: 24 });
   assert.equal(spring.end - spring.start, 23 * 3600000);
   assert.equal(autumn.end - autumn.start, 25 * 3600000);
+});
+
+test("morning brief publication is hash-bound, audited and idempotent", async (t) => {
+  const root = await temp(); t.after(() => rm(root, { recursive: true, force: true }));
+  const audit = new AuditLog(root); const config = { channel: { id: "private-channel" } };
+  const metadata = { idempotency_key: "morning-brief:private-channel:2026-08-23", content_hash: "hash-one", channel_id: "private-channel", published: false };
+  await mkdir(join(root, "briefs"), { recursive: true });
+  await writeFile(join(root, "briefs", "2026-08-23.json"), JSON.stringify(metadata));
+  const published = await recordMorningBriefPublication({ dataDir: root, audit, config, date: "2026-08-23", contentHash: "hash-one", status: "success", eventId: "event-one", now: "2026-08-23T07:15:00.000Z" });
+  assert.equal(published.status, "published"); assert.equal(published.published_event_id, "event-one");
+  assert.equal((await recordMorningBriefPublication({ dataDir: root, audit, config, date: "2026-08-23", contentHash: "hash-one", status: "success", eventId: "event-one" })).status, "already_published");
+  await assert.rejects(() => recordMorningBriefPublication({ dataDir: root, audit, config, date: "2026-08-23", contentHash: "different", status: "success", eventId: "event-two" }), /hash mismatch/);
+  const rows = await audit.rows(); assert.equal(rows.length, 1); assert.equal(rows[0].autonomy_level, "A2"); assert.ok(rows[0].approval_id);
 });
 
 test("Honey project state writes only meaningful revisions and detects conflicts", async (t) => {

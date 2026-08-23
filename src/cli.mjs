@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { AuditLog } from "./audit-log.mjs";
 import { AutonomyPolicy } from "./autonomy.mjs";
-import { buildMorningBrief } from "./briefing.mjs";
+import { buildMorningBrief, recordMorningBriefPublication } from "./briefing.mjs";
 import { loadConfig, projectRoot } from "./config.mjs";
 import { EventBus } from "./event-bus.mjs";
 import { runHeartbeat } from "./health.mjs";
@@ -42,6 +42,12 @@ else if (command === "publish") {
   output = await eventBus.publish(JSON.parse(raw));
 } else if (command === "recover") { await init(); output = { recovered: await eventBus.recoverUndispatched() };
 } else if (command === "brief") { await init(); output = await buildMorningBrief({ dataDir: config.data_dir, audit, stateStore, config }); }
+else if (command === "brief-record-publication") {
+  await init();
+  const date = option("--date"); const contentHash = option("--content-hash"); const status = option("--status");
+  if (!date || !contentHash || !["success", "failure"].includes(status)) throw new Error("brief-record-publication requires --date, --content-hash and --status success|failure");
+  output = await recordMorningBriefPublication({ dataDir: config.data_dir, audit, config, date, contentHash, status, eventId: option("--event-id"), errorCode: option("--error-code") });
+}
 else if (command === "state-update") {
   await init();
   const project = option("--project"); const raw = option("--json");
@@ -57,6 +63,6 @@ else if (command === "validate") {
   ];
   output = evaluateCriteria(criteria);
 } else {
-  output = { usage: "node src/cli.mjs <init|heartbeat|publish|recover|brief|state-update|metrics|validate> [--config path]" };
+  output = { usage: "node src/cli.mjs <init|heartbeat|publish|recover|brief|brief-record-publication|state-update|metrics|validate> [--config path]" };
 }
 process.stdout.write(`${JSON.stringify(output, null, 2)}\n`);
