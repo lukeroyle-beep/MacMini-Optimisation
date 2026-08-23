@@ -37,7 +37,7 @@ The verdict does not approve Phase 2 or any A2 action beyond the later owner-app
 
 - Bumble is now canonical in `Buzz Command Team`; Pollen remains installed as a legacy identity. Sentinel activity metadata drift remains unresolved.
 - The Buzz local-routing tree is not source controlled.
-- No Time Machine destination is configured. The selected external disk is ExFAT and contains a small Home Assistant backup, so erasure/reformatting requires explicit confirmation.
+- The encrypted 160 GB Time Machine destination is active and its first backup has started. macOS recommends a disk larger than 490.21 GB for this Mac, so version-history retention is a remaining capacity warning.
 - The Rook watchdog review is complete and an observe-only replacement is prepared, but deployment remains a separate approval.
 
 There are no uncovered blocking defects. These warnings do not authorize Phase 2 or A2.

@@ -7,6 +7,7 @@
 - `ai.buzz-morning-brief` prepares one deterministic brief at 07:15 and publishes it once to the private `Macmini Optimisation` channel as Honey. The existing Keychain identity is read at runtime; no private key is stored in this repository.
 - `ai.buzz-desktop-keepalive` starts Buzz after login and reopens it after an unexpected exit.
 - `ai.home-assistant-after-login` starts the existing Home Assistant VM after login when it is not already running.
+- Time Machine targets the encrypted APFS backup volume `Mac Mini Time Machine`. The first backup was started on 2026-08-23.
 
 ## Important paths
 
@@ -61,3 +62,14 @@ Time Machine reformatting, watchdog replacement deployment and model assignment 
 - Automatic private-channel morning-brief publication is a single scoped A2 exception authorised by Luke on 2026-08-23. It does not raise the general autonomy ceiling; all other A2 capabilities remain denied.
 - After-login recovery for Buzz and the existing Home Assistant VM is explicitly authorised. FileVault remains enabled, so a human login is still required after a cold reboot.
 - The Rook watchdog has been reviewed separately. Its observe-only replacement is prepared but is not deployed without a further change approval; see `WATCHDOG_GOVERNANCE.md`.
+- Canonical Bumble's production model is explicitly aligned to `gpt-5.6-terra[medium]` by owner instruction. The dry-run router remains unable to alter assignments.
+
+## Preserved external-disk data
+
+Before reformatting the 160 GB external disk, the existing Home Assistant backup was copied to:
+
+`~/Library/Application Support/MacMiniAI/backups/external-drive-preservation-2026-08-23/back_up_22_08_26_17_00`
+
+Checksum-mode synchronization and a recursive file comparison both reported an exact copy, including the ExFAT AppleDouble sidecars.
+
+The external disk was then erased as GUID/APFS and commissioned as an encrypted Time Machine destination. Its 160 GB capacity is below the macOS recommendation of 490.21 GB or larger, so it should be treated as a short-retention backup target rather than a deep archive.
